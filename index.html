@@ -1,0 +1,497 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grammar Quest | The School Festival</title>
+<style>
+:root{
+  --ink:#253052;
+  --muted:#71809c;
+  --purple:#7655e8;
+  --pink:#f06eaa;
+  --blue:#338ce6;
+  --green:#19a77e;
+  --bg:#f5f3ff;
+  --line:#e6e4f2;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Pretendard","Noto Sans KR",Arial,sans-serif;
+  line-height:1.65;
+}
+button{font:inherit;cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.45}
+.app{max-width:880px;margin:auto;padding:22px 16px 60px}
+header{
+  background:linear-gradient(115deg,#7655e8,#ab73e7,#f48ab9);
+  color:white;
+  border-radius:25px;
+  padding:26px;
+  position:relative;
+  overflow:hidden;
+}
+header h1{margin:4px 0;font-size:clamp(25px,5vw,37px)}
+header p{margin:0;opacity:.95}
+.kicker{font-size:12px;font-weight:900;letter-spacing:2px}
+.score{
+  position:absolute;right:22px;top:22px;
+  background:#ffffff32;padding:7px 14px;border-radius:30px;
+  font-weight:900;
+}
+.progress{display:flex;gap:7px;margin:20px 0}
+.step{
+  flex:1;height:9px;background:#ded9f3;border-radius:20px;
+}
+.step.active{background:var(--purple)}
+.step.done{background:var(--green)}
+.panel{
+  background:white;border:1px solid var(--line);
+  border-radius:22px;padding:26px;
+  box-shadow:0 5px 20px #37306b09;
+}
+h2{margin:0 0 9px;font-size:25px}
+h3{margin:0 0 10px}
+.sub{color:var(--muted);margin-top:0}
+.pill{
+  display:inline-block;background:#f0ebff;color:var(--purple);
+  border-radius:30px;padding:5px 12px;font-size:12px;
+  font-weight:900;margin-bottom:12px;
+}
+.story{
+  font-size:19px;line-height:2.15;
+  background:#faf9ff;border-radius:16px;padding:22px;
+}
+.target{
+  border:0;border-bottom:3px dashed var(--purple);
+  background:#eee8ff;color:#5636c9;border-radius:5px;
+  padding:1px 4px;font-weight:800;
+}
+.target:hover,.target.selected{
+  background:var(--purple);color:white;
+}
+.target.gerund{background:#e1f7ee;color:#087a5b;border-color:var(--green)}
+.target.gerund:hover,.target.gerund.selected{
+  background:var(--green);color:white;
+}
+.tip{
+  padding:14px 17px;border-radius:13px;
+  background:#fff5de;margin:16px 0;font-size:15px;
+}
+.feedback{
+  min-height:50px;background:#f3f6ff;
+  border-radius:13px;padding:12px 16px;margin:14px 0;
+}
+.feedback.good{background:#e6f8ef;color:#087b53}
+.feedback.bad{background:#fff0f0;color:#bd3f54}
+.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}
+.btn{
+  background:var(--purple);border:0;color:white;
+  padding:12px 22px;border-radius:12px;font-weight:800;
+}
+.btn.secondary{background:#eeebfa;color:#5e49ba}
+.btn.green{background:var(--green)}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+.option{
+  padding:16px;border:2px solid var(--line);
+  border-radius:13px;background:white;color:var(--ink);
+  text-align:center;font-weight:800;
+}
+.option:hover:not(:disabled){border-color:var(--purple);background:#f7f3ff}
+.option.correct{border-color:var(--green);background:#e4f9ef}
+.option.wrong{border-color:#f16d81;background:#fff0f2}
+.wordbank{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0}
+.word{
+  padding:10px 17px;border:2px solid var(--line);
+  background:white;border-radius:12px;font-weight:800;
+}
+.word.selected{border-color:var(--purple);background:#eee8ff}
+.word.placed{opacity:.35}
+.bins{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.bin{
+  min-height:210px;padding:15px;border-radius:16px;
+  background:#f2efff;border:2px dashed #a796ec;
+}
+.bin.ing{background:#e9faf2;border-color:#7bd2ae}
+.bin h3{text-align:center;font-size:17px}
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{
+  border:0;background:white;border-radius:9px;
+  padding:8px 10px;font-weight:800;
+  box-shadow:0 2px 6px #00000010;
+}
+.rulegrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+.rule{
+  padding:20px;border-radius:16px;background:#f0edff;
+}
+.rule.ing{background:#e7f9ef}
+.rule strong{display:block;font-size:19px}
+.rule p{margin:6px 0}
+.example{font-size:15px;color:#555e75}
+.question{
+  background:#faf9ff;padding:20px;border-radius:15px;
+  font-size:20px;font-weight:750;margin-top:20px;
+}
+.counter{font-size:13px;color:var(--muted);font-weight:800}
+.result{text-align:center;padding:20px 0}
+.result .big{font-size:65px}
+.result .number{font-size:45px;font-weight:900;color:var(--purple)}
+.small{font-size:13px;color:var(--muted)}
+@media(max-width:560px){
+ .panel{padding:18px}
+ .story{font-size:17px;padding:15px}
+ .rulegrid,.bins{grid-template-columns:1fr}
+ .score{position:static;display:inline-block;margin-top:12px}
+ header{padding:22px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="kicker">ENGLISH READING ADVENTURE</div>
+  <h1>📚 Grammar Quest</h1>
+  <p>The School Festival 🎪</p>
+  <div class="score" id="score">⭐ 0 XP</div>
+</header>
+<div class="progress" id="progress"></div>
+<main id="screen" class="panel" aria-live="polite"></main>
+</div>
+
+<script>
+"use strict";
+
+const story = [
+ {before:"Mina and Leo are getting ready for their school festival. Mina ",verb:"wants",after:" to make a big poster.",type:"to",base:"want"},
+ {before:"Leo ",verb:"enjoys",after:" drawing colorful animals.",type:"ing",base:"enjoy"},
+ {before:"They ",verb:"plan",after:" to open a small art shop.",type:"to",base:"plan"},
+ {before:"Mina ",verb:"finishes",after:" painting a beautiful sign.",type:"ing",base:"finish"},
+ {before:"Leo ",verb:"hopes",after:" to sell many pictures.",type:"to",base:"hope"},
+ {before:"He ",verb:"practices",after:" speaking English to visitors.",type:"ing",base:"practice"},
+ {before:"They ",verb:"decide",after:" to give free stickers to children.",type:"to",base:"decide"},
+ {before:"Mina ",verb:"avoids",after:" wasting paper.",type:"ing",base:"avoid"},
+ {before:"They ",verb:"need",after:" to clean their table.",type:"to",base:"need"},
+ {before:"Leo doesn't ",verb:"mind",after:" helping his friends.",type:"ing",base:"mind"}
+];
+
+const words = [
+ {word:"want",type:"to"},{word:"enjoy",type:"ing"},
+ {word:"plan",type:"to"},{word:"finish",type:"ing"},
+ {word:"hope",type:"to"},{word:"practice",type:"ing"},
+ {word:"decide",type:"to"},{word:"avoid",type:"ing"},
+ {word:"need",type:"to"},{word:"mind",type:"ing"}
+];
+
+const questions = [
+ {q:"Mina wants ___ a poster.",options:["to make","making"],answer:0,why:"want + to + 동사원형"},
+ {q:"Leo enjoys ___ animals.",options:["to draw","drawing"],answer:1,why:"enjoy + 동사-ing"},
+ {q:"They plan ___ an art shop.",options:["to open","opening"],answer:0,why:"plan + to + 동사원형"},
+ {q:"Mina finished ___ the sign.",options:["to paint","painting"],answer:1,why:"finish + 동사-ing"},
+ {q:"Leo hopes ___ many pictures.",options:["selling","to sell"],answer:1,why:"hope + to + 동사원형"},
+ {q:"He practices ___ English.",options:["speaking","to speak"],answer:0,why:"practice + 동사-ing"},
+ {q:"They decided ___ free stickers.",options:["giving","to give"],answer:1,why:"decide + to + 동사원형"},
+ {q:"Mina avoids ___ paper.",options:["wasting","to waste"],answer:0,why:"avoid + 동사-ing"},
+ {q:"They need ___ the table.",options:["cleaning","to clean"],answer:1,why:"need + to + 동사원형"},
+ {q:"Leo doesn't mind ___ his friends.",options:["to help","helping"],answer:1,why:"mind + 동사-ing"}
+];
+
+const finalQuestions = [
+ {q:"I enjoy ___ comic books.",options:["to read","reading"],answer:1,why:"enjoy + reading"},
+ {q:"We decided ___ a new game.",options:["to play","playing"],answer:0,why:"decide + to play"},
+ {q:"She avoids ___ late.",options:["to arrive","arriving"],answer:1,why:"avoid + arriving"},
+ {q:"Tom hopes ___ a prize.",options:["winning","to win"],answer:1,why:"hope + to win"},
+ {q:"I finished ___ my homework.",options:["doing","to do"],answer:0,why:"finish + doing"}
+];
+
+let stage=0,xp=0,discovered=new Set(),selectedWord=null;
+let bins={to:[],ing:[]},quizIndex=0,quizScore=0;
+let finalIndex=0,finalScore=0,locked=false;
+const $=id=>document.getElementById(id);
+
+function escapeHTML(s){
+ return String(s).replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",
+  '"':"&quot;","'":"&#39;"
+ })[c]);
+}
+function updateTop(){
+ $("score").textContent="⭐ "+xp+" XP";
+ $("progress").innerHTML=Array.from({length:5},(_,i)=>
+ `<div class="step ${i<stage?"done":i===stage?"active":""}"></div>`).join("");
+}
+function feedback(message,good=true){
+ const el=$("feedback");
+ if(!el)return;
+ el.className="feedback "+(good?"good":"bad");
+ el.textContent=message;
+}
+function award(points){xp+=points;updateTop()}
+function go(next){stage=next;locked=false;render();window.scrollTo(0,0)}
+function buttons(previous,next,label="Next →"){
+ return `<div class="actions">
+ ${previous!==null?`<button class="btn secondary" onclick="go(${previous})">← Back</button>`:""}
+ <button class="btn" onclick="go(${next})">${label}</button>
+ </div>`;
+}
+function render(){
+ updateTop();
+ if(stage===0)renderStory();
+ if(stage===1)renderDiscover();
+ if(stage===2)renderSort();
+ if(stage===3)renderQuiz();
+ if(stage===4)renderFinal();
+}
+
+function storyHTML(interactive){
+ return story.map((s,i)=>{
+  const marked=discovered.has(i);
+  const cls=s.type==="ing"?"gerund":"";
+  const target=interactive
+   ?`<button class="target ${cls} ${marked?"selected":""}"
+      onclick="discover(${i})">${escapeHTML(s.verb)}</button>`
+   :`<strong style="color:${s.type==="to"?"#7655e8":"#15966e"}">${escapeHTML(s.verb)}</strong>`;
+  return `<p style="margin:0 0 10px">${escapeHTML(s.before)}${target}${escapeHTML(s.after)}</p>`;
+ }).join("");
+}
+
+function renderStory(){
+ $("screen").innerHTML=`
+ <span class="pill">MISSION 1 · READ</span>
+ <h2>🎪 The School Festival</h2>
+ <p class="sub">Read the story. What are Mina and Leo preparing?</p>
+ <div class="story">${storyHTML(false)}</div>
+ <div class="tip">💡 Reading tip: 모든 단어를 번역하려 하지 말고,
+ 두 친구가 무엇을 하는지 상상하며 읽어 보세요.</div>
+ <h3>Quick Check</h3>
+ <p>What do Mina and Leo plan to open?</p>
+ <div class="options">
+ <button class="option" onclick="checkReading(0)">A food truck</button>
+ <button class="option" onclick="checkReading(1)">An art shop</button>
+ </div>
+ <div id="feedback" class="feedback">정답을 선택해 보세요.</div>
+ <div class="actions">
+ <button id="readNext" class="btn" disabled onclick="go(1)">Discover Grammar →</button>
+ </div>`;
+}
+let readingSolved=false;
+function checkReading(choice){
+ if(choice===1){
+  if(!readingSolved){award(10);readingSolved=true}
+  feedback("Correct! They plan to open an art shop. 🎨");
+  $("readNext").disabled=false;
+ }else feedback("Try again! Look for the sentence with 'plan'.",false);
+}
+
+function renderDiscover(){
+ $("screen").innerHTML=`
+ <span class="pill">MISSION 2 · NOTICE</span>
+ <h2>🔎 Be a Grammar Detective!</h2>
+ <p class="sub">이야기에서 강조된 동사를 눌러 보세요.
+ 뒤에 오는 표현의 형태를 관찰해 봅시다.</p>
+ <div class="story">${storyHTML(true)}</div>
+ <div id="feedback" class="feedback">동사를 눌러 문법 단서를 찾아보세요.</div>
+ <p class="counter" id="discoveryCount">${discovered.size} / 10 discovered</p>
+ <div class="actions">
+ <button class="btn secondary" onclick="go(0)">← Back</button>
+ <button id="discoverNext" class="btn" onclick="go(2)" ${discovered.size<10?"disabled":""}>Learn the Rule →</button>
+ </div>`;
+}
+function discover(i){
+ const s=story[i];
+ if(!discovered.has(i)){discovered.add(i);award(2)}
+ const structure=s.type==="to"?"to + 동사원형":"동사 + ing";
+ feedback(`${s.verb} → ${structure} | ${s.base} 뒤에 오는 형태를 확인하세요.`);
+ $("discoveryCount").textContent=discovered.size+" / 10 discovered";
+ if(discovered.size===10)$("discoverNext").disabled=false;
+ document.querySelectorAll(".target")[i].classList.add("selected");
+}
+
+function renderSort(){
+ $("screen").innerHTML=`
+ <span class="pill">MISSION 3 · SORT</span>
+ <h2>🧩 Two Grammar Teams</h2>
+ <p class="sub">동사를 선택한 뒤 알맞은 문법 팀을 눌러 분류하세요.</p>
+ <div class="rulegrid">
+ <div class="rule">
+ <strong>💜 TO Team</strong>
+ <p>동사 + to + 동사원형</p>
+ <div class="example">I want <b>to play</b>.</div>
+ </div>
+ <div class="rule ing">
+ <strong>💚 ING Team</strong>
+ <p>동사 + 동사-ing</p>
+ <div class="example">I enjoy <b>playing</b>.</div>
+ </div>
+ </div>
+ <h3>Choose a verb</h3>
+ <div class="wordbank" id="wordbank"></div>
+ <div class="bins">
+ <div class="bin" onclick="place('to')">
+ <h3>💜 TO Team</h3><div id="toBin" class="chips"></div>
+ </div>
+ <div class="bin ing" onclick="place('ing')">
+ <h3>💚 ING Team</h3><div id="ingBin" class="chips"></div>
+ </div>
+ </div>
+ <div id="feedback" class="feedback">먼저 동사를 선택하세요.</div>
+ <div class="actions">
+ <button class="btn secondary" onclick="go(1)">← Back</button>
+ <button class="btn" id="sortNext" onclick="startQuiz()" disabled>Practice →</button>
+ </div>`;
+ drawBins();
+}
+function drawBins(){
+ $("wordbank").innerHTML=words.map(w=>{
+  const placed=bins.to.includes(w.word)||bins.ing.includes(w.word);
+  return `<button class="word ${selectedWord===w.word?"selected":""} ${placed?"placed":""}"
+   ${placed?"disabled":""} onclick="selectWord('${w.word}')">${w.word}</button>`;
+ }).join("");
+ for(const type of ["to","ing"]){
+  $(type+"Bin").innerHTML=bins[type].map(w=>
+  `<button class="chip" onclick="event.stopPropagation();removeWord('${w}')">${w} ×</button>`).join("");
+ }
+ $("sortNext").disabled=bins.to.length+bins.ing.length!==10;
+}
+function selectWord(word){
+ selectedWord=word;
+ feedback(word+" 선택됨. 어느 팀에 속할까요?");
+ drawBins();
+}
+function place(type){
+ if(!selectedWord){feedback("동사를 먼저 선택해 주세요.",false);return}
+ const word=words.find(w=>w.word===selectedWord);
+ if(word.type!==type){
+  feedback(`${word.word}는 ${word.type==="to"?"to부정사":"동명사"}를 목적어로 취해요. 다시 시도!`,false);
+  return;
+ }
+ bins[type].push(word.word);
+ award(3);
+ feedback("Correct! "+word.word+" belongs to the "+(type==="to"?"TO":"ING")+" Team.");
+ selectedWord=null;drawBins();
+}
+function removeWord(word){
+ for(const type of ["to","ing"]){
+  bins[type]=bins[type].filter(w=>w!==word);
+ }
+ selectedWord=word;drawBins();
+ feedback("다시 분류할 수 있어요.");
+}
+function startQuiz(){quizIndex=0;quizScore=0;go(3)}
+
+function renderQuiz(){
+ if(quizIndex>=questions.length){
+  $("screen").innerHTML=`
+  <span class="pill">MISSION 4 · COMPLETE</span>
+  <div class="result"><div class="big">🌟</div>
+  <h2>Grammar Practice Complete!</h2>
+  <div class="number">${quizScore} / 10</div>
+  <p>이제 새로운 문장에서도 문법을 찾아볼까요?</p></div>
+  ${buttons(2,4,"Final Challenge →")}`;
+  return;
+ }
+ const q=questions[quizIndex];
+ $("screen").innerHTML=`
+ <span class="pill">MISSION 4 · PRACTICE</span>
+ <div class="counter">QUESTION ${quizIndex+1} / ${questions.length}</div>
+ <h2>🎯 Complete the Sentence</h2>
+ <p class="sub">이야기 속 문장을 완성하세요.</p>
+ <div class="question">${escapeHTML(q.q)}</div>
+ <div class="options">
+ ${q.options.map((o,i)=>`<button class="option" id="opt${i}"
+ onclick="answerQuiz(${i})">${escapeHTML(o)}</button>`).join("")}
+ </div>
+ <div id="feedback" class="feedback">Choose the correct answer.</div>
+ <div class="actions">
+ <button class="btn" id="nextQ" disabled onclick="nextQuiz()">Next →</button>
+ </div>`;
+}
+function answerQuiz(choice){
+ if(locked)return;
+ locked=true;
+ const q=questions[quizIndex];
+ const correct=choice===q.answer;
+ if(correct){quizScore++;award(5)}
+ document.querySelectorAll(".option").forEach((b,i)=>{
+  b.disabled=true;
+  if(i===q.answer)b.classList.add("correct");
+  else if(i===choice)b.classList.add("wrong");
+ });
+ feedback((correct?"Excellent! ":"Not quite. ")+q.why,correct);
+ $("nextQ").disabled=false;
+}
+function nextQuiz(){quizIndex++;locked=false;renderQuiz()}
+
+function renderFinal(){
+ if(finalIndex>=finalQuestions.length){
+  const percent=Math.round(finalScore/finalQuestions.length*100);
+  const message=percent===100?"Grammar Master! 🏆":
+   percent>=80?"Amazing work! 🌟":
+   percent>=60?"Good progress! 💪":"Keep practicing! 📚";
+  $("screen").innerHTML=`
+  <div class="result">
+  <div class="big">${percent===100?"🏆":"🎉"}</div>
+  <h2>${message}</h2>
+  <p>Final Challenge Result</p>
+  <div class="number">${finalScore} / 5</div>
+  <p>Total XP: <b>${xp}</b> ⭐</p>
+  </div>
+  <div class="rulegrid">
+  <div class="rule"><strong>💜 TO</strong>
+  want · hope · decide · plan · need</div>
+  <div class="rule ing"><strong>💚 ING</strong>
+  enjoy · finish · avoid · practice · mind</div>
+  </div>
+  <div class="tip">📌 Remember: 동사의 의미만으로 항상 형태를
+  결정할 수 있는 것은 아니에요. 어떤 동사가 어떤 목적어 형태와
+  함께 쓰이는지 문장 속에서 익히는 것이 중요해요.</div>
+  <div class="actions">
+  <button class="btn secondary" onclick="go(0)">Read Story Again</button>
+  <button class="btn green" onclick="restart()">Play Again ↻</button>
+  </div>`;
+  return;
+ }
+ const q=finalQuestions[finalIndex];
+ $("screen").innerHTML=`
+ <span class="pill">FINAL MISSION</span>
+ <div class="counter">CHALLENGE ${finalIndex+1} / 5</div>
+ <h2>🏆 Grammar Master Challenge</h2>
+ <p class="sub">이번에는 새로운 문장에 배운 문법을 적용해 보세요.</p>
+ <div class="question">${escapeHTML(q.q)}</div>
+ <div class="options">
+ ${q.options.map((o,i)=>`<button class="option"
+ onclick="answerFinal(${i})">${escapeHTML(o)}</button>`).join("")}
+ </div>
+ <div id="feedback" class="feedback">Think carefully!</div>
+ <div class="actions">
+ <button id="finalNext" class="btn" disabled onclick="nextFinal()">Next →</button>
+ </div>`;
+}
+function answerFinal(choice){
+ if(locked)return;
+ locked=true;
+ const q=finalQuestions[finalIndex];
+ const correct=choice===q.answer;
+ if(correct){finalScore++;award(10)}
+ document.querySelectorAll(".option").forEach((b,i)=>{
+  b.disabled=true;
+  if(i===q.answer)b.classList.add("correct");
+  else if(i===choice)b.classList.add("wrong");
+ });
+ feedback((correct?"Correct! ":"Let's learn from this one. ")+q.why,correct);
+ $("finalNext").disabled=false;
+}
+function nextFinal(){finalIndex++;locked=false;renderFinal()}
+function restart(){
+ stage=0;xp=0;discovered=new Set();selectedWord=null;
+ bins={to:[],ing:[]};quizIndex=0;quizScore=0;
+ finalIndex=0;finalScore=0;locked=false;readingSolved=false;
+ render();window.scrollTo(0,0);
+}
+render();
+</script>
+</body>
+</html>
